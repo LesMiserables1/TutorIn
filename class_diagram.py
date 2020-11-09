@@ -222,7 +222,7 @@ class __main___:
     # Akun Tutor
     tutor = Tutor('Tutor','password','Tutor','tutor@gmail.com','Tutor')
     tutor.createAccount('T001','Universitas Gadjah Mada','9876543210','identitas tutor','5')
-    tutor.manageRequest
+    tutor.manageRequest()
     tutor.sendMessage('Luke','Test')
 
     # Sesi belajar
