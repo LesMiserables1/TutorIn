@@ -1,0 +1,26 @@
+{
+  "name": "tutorin",
+  "version": "1.0.0",
+  "description": "Tugas Akhir Praktikum Pengembangan Perangkat Lunak",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LesMiserables1/TutorIn.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LesMiserables1/TutorIn/issues"
+  },
+  "homepage": "https://github.com/LesMiserables1/TutorIn#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.3.5"
+  }
+}
