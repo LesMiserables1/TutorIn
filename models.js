@@ -117,9 +117,12 @@ const tutoring_session = sequelize.define('tutoring_session',{
   date : {
     type : DataTypes.DATE
   },
-  //UNPAID, PAID
+  //UNPAID, PAID, VERIFIED
   status : {
     type : DataTypes.STRING,
+  },
+  fee : {
+    type : DataTypes.DOUBLE
   },
   link :{
     type : DataTypes.STRING,
