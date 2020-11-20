@@ -1,0 +1,24 @@
+backend pppl :
+
+1. register dan login siswa
+    a. register siswa
+    b. login siswa
+
+2. register dan login tutor
+    a. register tutor
+    b. kirim berkas dan verifikasi
+    c. login tutor
+
+3. api untuk admin
+    a. login admin
+    b. verifikasi tutor
+    c. verifikasi pembayaran
+
+4. booking tutor
+    a. api untuk search tutor
+    b. api untuk book tutor
+    c. checkout pembayaran tutor
+
+5. send link meet
+    a. update link meet
+

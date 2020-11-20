@@ -60,13 +60,23 @@ const tutor = sequelize.define('tutor',{
   tanggal_lahir : {
     type : DataTypes.DATE
   },
-  topic :{
-    type : DataTypes.STRING
-  },
   //VERIFIED or UNVERIFIED
   status :{
     type : DataTypes.STRING,
     defaultValue: 'UNVERIFIED'
+  }
+})
+const topic = sequelize.define('topic',{
+  id : { 
+    type : DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement : true
+  },
+  topic : {
+    type : DataTypes.STRING
+  },
+  fee : {
+    type : DataTypes.DOUBLE,
   }
 })
 
@@ -97,24 +107,6 @@ const admin = sequelize.define('admin',{
   }
 })
 
-const tutoring_request = sequelize.define('tutoring_request',{
-  id : { 
-    type : DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement : true
-  },
-  date : {
-    type : DataTypes.DATE
-  },
-  fee : {
-    type : DataTypes.DOUBLE
-  },
-  //IN, ACCEPTED, REJECTED
-  status : {
-    type : DataTypes.STRING,
-  }
- 
-})
 
 const tutoring_session = sequelize.define('tutoring_session',{
   id : { 
@@ -125,9 +117,6 @@ const tutoring_session = sequelize.define('tutoring_session',{
   date : {
     type : DataTypes.DATE
   },
-  fee : {
-    type : DataTypes.DOUBLE
-  },
   //UNPAID, PAID
   status : {
     type : DataTypes.STRING,
@@ -137,21 +126,21 @@ const tutoring_session = sequelize.define('tutoring_session',{
   }
 })
 
-siswa.hasMany(tutoring_request);
-tutoring_request.belongsTo(siswa);
+tutor.hasMany(topic)
+topic.belongsTo(tutor)
 
-tutor.hasMany(tutoring_request);
-tutoring_request.belongsTo(tutor);
+siswa.hasMany(tutoring_session)
+tutoring_session.belongsTo(siswa)
 
-tutoring_request.hasOne(tutoring_session);
-tutoring_session.belongsTo(tutoring_request);
+topic.hasMany(tutoring_session)
+tutoring_session.belongsTo(topic)
 
 sequelize.sync({force : false})
 
 module.exports = {
   siswa : siswa,
   tutor : tutor,
-  admin : amdin,
-  tutoring_request : tutoring_request,
-  tutoring_session : tutoring_session
+  admin : admin,
+  tutoring_session : tutoring_session,
+  topic : topic
 }
