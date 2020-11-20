@@ -1,26 +1,41 @@
 const express = require('express')
 const cors = require('cors')
-const model = require('./model.js')
+const model = require('./models.js')
 const crypto = require('crypto')
 const jwt = require("jsonwebtoken");
-const verifyToken = require('./verify.js');
+const verifyToken = require('./verifyToken.js');
+const multer = require('multer')
+const fs = require('fs').promises
+const path = require('path')
 
 let app = express()
+let upload = multer({dest : 'uploads/'})
 app.use(express.json())
 app.use(cors())
-
 // api untuk siswa
+
+
 app.post('/siswa/register',async(req,res)=>{
     let body = req.body
     let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
 
-    const siswa = await model.siswa.create({
-        "email" : body.email,
-        "password" : passwordHash
-    })
-    res.send({
-        status : 'ok'
-    })
+    try {
+     
+        const siswa = await model.siswa.create({
+            "email" : body.email,
+            "password" : passwordHash,
+            "nama" : body.nama,
+            "nomor_hp" : body.nomor_hp
+        })
+        return res.send({
+            status : 'ok'
+        })   
+    } catch (error) {
+        return res.send({
+
+            status
+        })
+    }
 })
 
 
@@ -28,7 +43,7 @@ app.post('/siswa/login',async(req,res)=>{
     let body = req.body
     let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
 
-    const siswa = await model.siswa.findOne({ where: { email: body.email, password: passwordHash } })
+    const siswa = await model.siswa.findOne({ email: body.email, password: passwordHash })
     if (siswa == null) {
         return res.send({
             "status": "failed",
@@ -46,9 +61,9 @@ app.post('/siswa/login',async(req,res)=>{
     })
 })
 
-app.post('/siswa/update',verifyToken,async(req,res)=>{
+app.post('/siswa/update',[verifyToken,upload.single('image')],async(req,res)=>{
     let body = req.body
-
+    
     if(req.decode.role != 'siswa'){
         res.send({
             "status" : "failed",
@@ -56,13 +71,14 @@ app.post('/siswa/update',verifyToken,async(req,res)=>{
         })
     }
     let siswa = await model.siswa.findOne({id : req.decode.id})
+    const targetPath = path.join(__dirname, `./uploads/siswa/${siswa.email}${path.extname(req.file.originalname).toLowerCase()}`);
+    await fs.rename(req.file.path,targetPath)
     siswa.nama = body.nama
     siswa.nomor_hp = body.nomor_hp
-    admin.gender = body.gender
-    siswa.tanggal_lahir = body.tanggal_lahir
+    siswa.image_path = `/uploads/siswa/${siswa.email}${path.extname(req.file.originalname).toLowerCase()}`
     siswa.save()
     
-    res.send({
+    return res.send({
         status : "ok"
     })
 })  
@@ -245,7 +261,7 @@ app.post('/tutor/retrieve/session',verifyToken,async(req,res)=>{
         })
     }
 
-    const session = await model.tutoring_session.findAll({where: {tutorId : req.decode.id, status = 'VERIFIED'}})
+    // const session = await model.tutoring_session.findAll({where: {tutorId : req.decode.id, status = 'VERIFIED'}})
 
     return res.send({
         "status" : 'ok',
@@ -301,9 +317,9 @@ app.post('/tutor/request/payment', verifyToken, async(req, res) => {
 
     const session = model.transaction.create({
         tutorId: req.decode.id,
-        sessionId = body.id,
-        fee = body.fee,
-        status = "UNVERIFIED"
+        sessionId : body.id,
+        fee : body.fee,
+        status : "UNVERIFIED"
     })
 
     return res.send({

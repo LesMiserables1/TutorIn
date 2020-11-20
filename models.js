@@ -26,11 +26,8 @@ const siswa = sequelize.define('siswa',{
   nomor_hp : {
       type : DataTypes.STRING
   },
-  gender : {
+  image_path : {
     type : DataTypes.STRING
-  },
-  tanggal_lahir : {
-    type : DataTypes.DATE
   }
 })
 
@@ -120,9 +117,6 @@ const tutoring_session = sequelize.define('tutoring_session',{
   //UNPAID, PAID, VERIFIED
   status : {
     type : DataTypes.STRING,
-  },
-  fee : {
-    type : DataTypes.DOUBLE
   },
   link :{
     type : DataTypes.STRING,
