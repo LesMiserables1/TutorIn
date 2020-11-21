@@ -106,8 +106,9 @@ const tutoring_session = sequelize.define('tutoring_session',{
     type : DataTypes.DATE
   },
   //UNPAID, PAID, VERIFIED
-  status : {
+  status_siswa : {
     type : DataTypes.STRING,
+    defaultValue : "UNVERIFIED"
   },
   link :{
     type : DataTypes.STRING,
@@ -120,13 +121,13 @@ const transaction = sequelize.define('transaction',{
     primaryKey: true,
     autoIncrement : true
   },
-  //UNVERIFIED, VERIFIED
-  status_siswa : {
-    type : DataTypes.STRING,
-  },
+
   //REQUESTED, PAID
   status_tutor : {
     type : DataTypes.STRING,
+  },
+  nomor_trf : {
+    type : DataTypes.STRING
   }
 })
 
@@ -142,7 +143,7 @@ tutoring_session.belongsTo(topic)
 tutoring_session.hasOne(transaction)
 transaction.belongsTo(tutoring_session)
 
-sequelize.sync({force : false})
+sequelize.sync({force : true})
 
 module.exports = {
   siswa : siswa,

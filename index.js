@@ -5,17 +5,14 @@ const crypto = require('crypto')
 const jwt = require("jsonwebtoken");
 const verifyToken = require('./verifyToken.js');
 const multer = require('multer')
-const fs = require('fs').promises
-const path = require('path');
-const {Op} = require('sequelize')
+const {Op, where} = require('sequelize')
 
 let app = express()
-let upload = multer({dest : 'uploads/'})
+
 app.use(express.json())
 app.use(cors())
-// api untuk siswa
 
-
+// api untuk register siswa
 app.post('/siswa/register',async(req,res)=>{
     let body = req.body
     let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
@@ -39,12 +36,12 @@ app.post('/siswa/register',async(req,res)=>{
     }
 })
 
-
+// api untuk login siswa
 app.post('/siswa/login',async(req,res)=>{
     let body = req.body
     let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
 
-    const siswa = await model.siswa.findOne({ email: body.email, password: passwordHash })
+    const siswa = await model.siswa.findOne({where : { email: body.email, password: passwordHash }})
     if (siswa == null) {
         return res.send({
             "status": "failed",
@@ -62,6 +59,7 @@ app.post('/siswa/login',async(req,res)=>{
     })
 })
 
+// api untuk update data siswa
 app.post('/siswa/update',verifyToken,async(req,res)=>{
     let body = req.body
     
@@ -71,7 +69,7 @@ app.post('/siswa/update',verifyToken,async(req,res)=>{
             "msg" : "role is incorrect"
         })
     }
-    let siswa = await model.siswa.findOne({id : req.decode.id})
+    let siswa = await model.siswa.findByPk(req.decode.id)
     if(body.nama != null)
         siswa.nama = body.nama
     if(body.nomor_hp != null)
@@ -89,6 +87,7 @@ app.post('/siswa/update',verifyToken,async(req,res)=>{
     })
 })  
 
+// api untuk mendapatkan data siswa
 app.post('/siswa/retrieve/data',verifyToken,async(req,res)=>{
     if(req.decode.role != 'siswa'){
         res.send({
@@ -96,7 +95,7 @@ app.post('/siswa/retrieve/data',verifyToken,async(req,res)=>{
             "msg" : "role is incorrect"
         })
     }
-    const siswa = await model.siswa.findOne({id : req.decode.id})
+    const siswa = await model.siswa.findByPk(req.decode.id)
     
     res.send({
         "status" : 'ok',
@@ -104,7 +103,7 @@ app.post('/siswa/retrieve/data',verifyToken,async(req,res)=>{
     })
 })
 
-//search tutor berdasarkan topik yg diajar(?) --> masih harus di fix
+// api untuk siswa mencari tutor berdasarkan topik
 app.post('/siswa/search/tutor',verifyToken,async(req,res)=>{
     if(req.decode.role != 'siswa'){
         return res.send({
@@ -128,6 +127,7 @@ app.post('/siswa/search/tutor',verifyToken,async(req,res)=>{
     })
 })
 
+// api untuk siswa booking tutor
 app.post('/siswa/book', verifyToken, async(req, res) => {
     let body = req.body
     if(req.decode.role != 'siswa'){
@@ -136,21 +136,36 @@ app.post('/siswa/book', verifyToken, async(req, res) => {
             "msg" : "role is incorrect"
         })
     }
-
+    
     const session = model.tutoring_session.create({
-        customerId: req.decode.id,
-        tutorId: body.tutorId,
+        siswaId : req.decode.id,
+        topicId : body.topicId,
         date : body.date,
         fee : body.fee,
         status : "UNPAID"
     })
-
+    
     return res.send({
         "status" : "ok",
     })
 })
 
-//payment transaction
+// api untuk siswa mengambil data tutoring session
+app.post('/siswa/retrieve/session',verifyToken, async(req,res)=>{
+    if(req.decode.role != 'siswa'){
+        res.send({
+            "status" : "failed",
+            "msg" : "role is incorrect"
+        })
+    }
+    let session = await model.tutoring_session.findAll({where : {siswaId : req.decode.id}})
+    return res.send({
+        status : "ok",
+        data : session
+    })
+})
+
+// api untuk siswa membayar tutoring session
 app.post('/siswa/checkout', verifyToken, async(req, res) => {
     let body = req.body
     if(req.decode.role != 'siswa'){
@@ -159,22 +174,22 @@ app.post('/siswa/checkout', verifyToken, async(req, res) => {
             "msg" : "role is incorrect"
         })
     }
-
-    const session = await model.tutoring_session.findOne({id : body.id})
-    session.status = 'PAID'
+    
+    const session = await model.tutoring_session.findByPk(body.sessionId)
+    console.log(session)
+    session.status_siswa = 'PAID'   
     session.save()
     
     const transaction = model.transaction.create({
-        tutoring_sessionId : body.id,
-        status_siswa : "UNVERIFIED"
+        tutoringSessionId : body.sessionId,
     })
     
     return res.send({
-        "status" : "ok",
+        "status" : "ok"
     })
 })
 
-//api untuk tutor
+//api untuk register tutor
 app.post('/tutor/register',async(req,res)=>{
     let body = req.body
     let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
@@ -195,6 +210,7 @@ app.post('/tutor/register',async(req,res)=>{
     }
 })
 
+// api untuk login tutor
 app.post('/tutor/login',async(req,res)=>{
     let body = req.body
     let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
@@ -217,6 +233,7 @@ app.post('/tutor/login',async(req,res)=>{
     })
 })
 
+// api untuk update data tutor
 app.post('/tutor/update',verifyToken,async(req,res)=>{
     let body = req.body
 
@@ -226,11 +243,11 @@ app.post('/tutor/update',verifyToken,async(req,res)=>{
             "msg" : "role is incorrect"
         })
     }
-    let tutor = await model.tutor.findOne({id : req.decode.id})
-    if(tutor == null){
+    let tutor = await model.tutor.findByPk(req.decode.id)
+    if(tutor == null || tutor.status == 'UNVERIFIED'){
         return res.send({
             "status" : "failed",
-            "msg" : "user does not exist"
+            "msg" : "user does not exist or not verified",
         })
     }
     if(body.nama){
@@ -251,7 +268,7 @@ app.post('/tutor/update',verifyToken,async(req,res)=>{
     }
     if(body.topik){
         let topic = model.topic.create({
-            topic : body.topic,
+            topic : body.topik,
             tutorId : req.decode.id
         })
     }
@@ -262,6 +279,7 @@ app.post('/tutor/update',verifyToken,async(req,res)=>{
     })
 })  
 
+// api untuk mendapatkan data tutor
 app.post('/tutor/retrieve/data',verifyToken,async(req,res)=>{
     if(req.decode.role != 'tutor'){
         return res.send({
@@ -271,11 +289,10 @@ app.post('/tutor/retrieve/data',verifyToken,async(req,res)=>{
     }
 
     const tutor = await model.tutor.findByPk(req.decode.id,{include : model.topic})
-    console.log(tutor)
-    if(tutor == null){
+    if(tutor == null || tutor.status == 'UNVERIFIED'){
         return res.send({
             "status" : "failed",
-            "msg" : 'user does not exist'
+            "msg" : 'user does not exist or not verified'
         })
     }
     return res.send({
@@ -284,6 +301,7 @@ app.post('/tutor/retrieve/data',verifyToken,async(req,res)=>{
     })
 })
 
+// api untuk mendapatkan tutoring session
 app.post('/tutor/retrieve/session',verifyToken,async(req,res)=>{
     if(req.decode.role != 'tutor'){
         return res.send({
@@ -292,14 +310,14 @@ app.post('/tutor/retrieve/session',verifyToken,async(req,res)=>{
         })
     }
 
-    // const session = await model.tutoring_session.findAll({where: {tutorId : req.decode.id, status = 'VERIFIED'}})
-
+    const session = await model.tutoring_session.findAll({where : {status_siswa : "VERIFIED"}})
     return res.send({
         "status" : 'ok',
         "data" : session
     })
 })
 
+// api untuk mengupdate link meet
 app.post('/tutor/update/link', verifyToken, async(req,res)=>{
     let body = req.body
     if(req.decode.role != 'tutor'){
@@ -309,34 +327,16 @@ app.post('/tutor/update/link', verifyToken, async(req,res)=>{
         })
     }
 
-    const session = await model.tutoring_session.findOne({id : body.id})
+    const session = await model.tutoring_session.findByPk(body.sessionId)
     session.link = body.link
     session.save()
     
     return res.send({
         "status" : 'ok',
-        "data" : session
     })
 })
 
-app.post('/tutor/upload/berkas',verifyToken,async(req,res)=>{
-    let body = req.body
-    if(req.decode.role != 'tutor'){
-        return res.send({
-            "status" : "failed",
-            "msg" : "role is incorrect"
-        })
-    }
-
-    const tutor = await model.tutor.findOne({id : req.decode.id})
-    tutor.berkas = body.berkas
-    tutor.save()
-    
-    return res.send({
-        "status" : 'ok',
-    })
-})
-
+// api untuk request payment
 app.post('/tutor/request/payment', verifyToken, async(req, res) => {
     let body = req.body
     if(req.decode.role != 'tutor'){
@@ -346,16 +346,17 @@ app.post('/tutor/request/payment', verifyToken, async(req, res) => {
         })
     }
 
-    const transaction = await model.transaction.findOne({tutoring_sessionId : body.id})
-    transaction.status_tutor = 'REQUESTED'
-    transaction.save()
+    const transaction = await model.tutoring_session.findByPk(body.sessionId,{include : model.transaction})
+    transaction.transaction.status_tutor = 'REQUESTED'
+    transaction.transaction.nomor_trf = body.nomor_trf
+    transaction.transaction.save()
 
     return res.send({
         "status" : "ok",
     })
 })
 
-//api admin
+//api untuk login admin
 app.post('/admin/login',async(req,res)=>{
     let body = req.body
     let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
@@ -378,31 +379,8 @@ app.post('/admin/login',async(req,res)=>{
     })
 })
  
-app.post('/admin/retrieve/data',verifyToken,async(req,res)=>{
-    
-    if(req.decode.role != 'admin'){
-        return res.send({
-            "status" : "failed",
-            "msg" : "role is incorrect"
-        })
-    }
-
-    const admin = await model.admin.findOne({id : req.decode.id})
-    if(admin == null){
-        return res.send({
-            "status" : "failed",
-            "msg" : 'user does not exist'
-        })
-    }
-    return res.send({
-        "status" : 'ok',
-        "data" : admin
-    })
-})
-
-//liat tutor yang blm diverify
+// api admin untuk mendapatkan tutor yang belum di verified
 app.post('/admin/retrieve/tutor',verifyToken,async(req,res)=>{
-    let body = req.body
     if(req.decode.role != 'admin'){
         return res.send({
             "status" : "failed",
@@ -410,14 +388,14 @@ app.post('/admin/retrieve/tutor',verifyToken,async(req,res)=>{
         })
     }
 
-    const tutor = await model.tutor.findAll({status : 'UNVERIFIED'})
-
+    let tutor = await model.tutor.findAll({where : {status : "UNVERIFIED"}})
     return res.send({
         "status" : 'ok',
         "data" : tutor
     })
 })
 
+// api untuk admin verify tutor
 app.post('/admin/verify/tutor', verifyToken, async(req,res)=>{
     let body = req.body
     if(req.decode.role != 'admin'){
@@ -427,18 +405,17 @@ app.post('/admin/verify/tutor', verifyToken, async(req,res)=>{
         })
     }
 
-    const tutor = await model.tutor.findOne({id : body.id})
+    const tutor = await model.tutor.findByPk(body.tutorId)
     tutor.status = 'VERIFIED'
     tutor.save()
 
     return res.send({
-        "status" : 'ok',
-        "data" : tutor
+        "status" : 'ok'
     })
 })
 
-//liat payment siswa yang menunggu untuk di verify
-app.post('/admin/retrieve/payment',verifyToken,async(req,res)=>{
+// api untuk mendapatkan payment siswa
+app.post('/admin/retrieve/siswa/payment',verifyToken,async(req,res)=>{
     let body = req.body
     if(req.decode.role != 'admin'){
         return res.send({
@@ -447,14 +424,16 @@ app.post('/admin/retrieve/payment',verifyToken,async(req,res)=>{
         })
     }
 
-    const session = await model.tutoring_session.findOne({status : 'PAID'})
-
+    const session = await model.tutoring_session.findAll({include : model.transaction,where : {status_siswa : "PAID"}})
+    // const transaction = session.transaction
+    
     return res.send({
         "status" : 'ok',
         "data" : session
     })
 })
 
+// api untuk verify payment siswa
 app.post('/admin/verify/siswa/payment', verifyToken, async(req,res)=>{
     let body = req.body
     if(req.decode.role != 'admin'){
@@ -463,40 +442,33 @@ app.post('/admin/verify/siswa/payment', verifyToken, async(req,res)=>{
             "msg" : "role is incorrect"
         })
     }
-
-    const session = await model.tutoring_session.findOne({id : body.id})
-    session.status = 'VERIFIED'
-    session.save()
     
-    const transaction = await model.transaction.findOne({tutoring_sessionId : body.id})
-    transaction.status_siswa = 'VERIFIED'
-    transaction.save()
+    const transaction = await model.transaction.findByPk(body.transactionId,{include : model.tutoring_session})
+    transaction.tutoring_session.status_siswa = 'VERIFIED'
+    transaction.tutoring_session.save()
     
     return res.send({
-        "status" : 'ok',
-        "data" : session
+        "status" : 'ok'
     })
 })
 
-//liat tutor yang request payment
-app.post('/admin/retrieve/payment',verifyToken,async(req,res)=>{
-    let body = req.body
+// api untuk mendapatkan pembayaran tutor
+app.post('/admin/retrieve/tutor/payment',verifyToken,async(req,res)=>{
     if(req.decode.role != 'admin'){
         return res.send({
             "status" : "failed",
             "msg" : "role is incorrect"
         })
     }
-
-    const transaction = await model.transaction.findAll({status_tutor : 'REQUESTED'})
+    let transaction = await model.transaction.findAll({where : {status_tutor : "REQUESTED"}})
 
     return res.send({
-        "status" : 'ok',
-        "data" : transaction
+        status : "ok",
+        data : transaction
     })
 })
 
-//bayar tutor
+// api untuk membayar tutor
 app.post('/admin/send/tutor/payment', verifyToken, async(req,res)=>{
     let body = req.body
     if(req.decode.role != 'admin'){
@@ -506,16 +478,13 @@ app.post('/admin/send/tutor/payment', verifyToken, async(req,res)=>{
         })
     }
 
-    const transaction = await model.transaction.findOne({tutoring_sessionId : body.id})
+    const transaction = await model.transaction.findByPk( body.transactionId)
     transaction.status_tutor = 'PAID'
     transaction.save()
     
     return res.send({
-        "status" : 'ok',
-        "data" : transaction
+        "status" : 'ok'
     })
 })
-
-
 
 app.listen(3000)
