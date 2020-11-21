@@ -123,6 +123,22 @@ const tutoring_session = sequelize.define('tutoring_session',{
   }
 })
 
+const transaction = sequelize.define('transaction',{
+  id : { 
+    type : DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement : true
+  },
+  //UNVERIFIED, VERIFIED
+  status_siswa : {
+    type : DataTypes.STRING,
+  },
+  //REQUESTED, PAID
+  status_tutor : {
+    type : DataTypes.STRING,
+  }
+})
+
 tutor.hasMany(topic)
 topic.belongsTo(tutor)
 
@@ -132,6 +148,9 @@ tutoring_session.belongsTo(siswa)
 topic.hasMany(tutoring_session)
 tutoring_session.belongsTo(topic)
 
+tutoring_session.hasOne(transaction)
+transaction.belongsTo(tutoring_session)
+
 sequelize.sync({force : false})
 
 module.exports = {
@@ -139,5 +158,6 @@ module.exports = {
   tutor : tutor,
   admin : admin,
   tutoring_session : tutoring_session,
-  topic : topic
+  topic : topic,
+  transaction : transaction
 }
