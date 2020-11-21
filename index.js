@@ -6,7 +6,8 @@ const jwt = require("jsonwebtoken");
 const verifyToken = require('./verifyToken.js');
 const multer = require('multer')
 const fs = require('fs').promises
-const path = require('path')
+const path = require('path');
+const {Op} = require('sequelize')
 
 let app = express()
 let upload = multer({dest : 'uploads/'})
@@ -61,7 +62,7 @@ app.post('/siswa/login',async(req,res)=>{
     })
 })
 
-app.post('/siswa/update',[verifyToken,upload.single('image')],async(req,res)=>{
+app.post('/siswa/update',verifyToken,async(req,res)=>{
     let body = req.body
     
     if(req.decode.role != 'siswa'){
@@ -71,11 +72,16 @@ app.post('/siswa/update',[verifyToken,upload.single('image')],async(req,res)=>{
         })
     }
     let siswa = await model.siswa.findOne({id : req.decode.id})
-    const targetPath = path.join(__dirname, `./uploads/siswa/${siswa.email}${path.extname(req.file.originalname).toLowerCase()}`);
-    await fs.rename(req.file.path,targetPath)
-    siswa.nama = body.nama
-    siswa.nomor_hp = body.nomor_hp
-    siswa.image_path = `/uploads/siswa/${siswa.email}${path.extname(req.file.originalname).toLowerCase()}`
+    if(body.nama != null)
+        siswa.nama = body.nama
+    if(body.nomor_hp != null)
+        siswa.nomor_hp = body.nomor_hp
+    if(body.email != null)
+        siswa.email = body.email
+    if(body.new_password != null){
+        let passwordHash = crypto.createHash('sha256').update(body.new_password).digest('base64')
+        siswa.password = passwordHash
+    }
     siswa.save()
     
     return res.send({
@@ -108,8 +114,9 @@ app.post('/siswa/search/tutor',verifyToken,async(req,res)=>{
     }
 
     let body = req.body
-    let tutor = await model.tutor.findAll({
-        where :{
+    let topic = await model.topic.findAll({
+        include : model.tutor,
+        where : {
             topic : {
                 [Op.like] : `%${body.query}%`
             }
@@ -117,7 +124,7 @@ app.post('/siswa/search/tutor',verifyToken,async(req,res)=>{
     })
     return res.send({
         "status" : "ok",
-        data : tutor
+        data : topic
     })
 })
 
@@ -220,11 +227,28 @@ app.post('/tutor/update',verifyToken,async(req,res)=>{
             "msg" : "user does not exist"
         })
     }
-    tutor.alamat = body.alamat
-    tutor.nama = body.nama
-    tutor.nomor_hp = body.nomor_hp
-    tutor.kota = body.kota
-    tutor.tanggal_lahir = body.tanggal_lahir
+    if(body.nama){
+        tutor.nama = body.nama
+    }
+    if(body.email){
+        tutor.email = body.email
+    }
+    if(body.nomor_hp){
+        tutor.nomor_hp = body.nomor_hp
+    }
+    if(body.deskripsi){
+        tutor.deskripsi = body.deskripsi
+    }
+    if(body.password){
+        let passwordHash = crypto.createHash('sha256').update(body.new_password).digest('base64')
+        tutor.password = passwordHash
+    }
+    if(body.topik){
+        let topic = model.topic.create({
+            topic : body.topic,
+            tutorId : req.decode.id
+        })
+    }
     tutor.save()
     
     return res.send({
@@ -240,7 +264,8 @@ app.post('/tutor/retrieve/data',verifyToken,async(req,res)=>{
         })
     }
 
-    const tutor = await model.tutor.findOne({id : req.decode.id})
+    const tutor = await model.tutor.findByPk(req.decode.id,{include : model.topic})
+    console.log(tutor)
     if(tutor == null){
         return res.send({
             "status" : "failed",
@@ -328,26 +353,6 @@ app.post('/tutor/request/payment', verifyToken, async(req, res) => {
 })
 
 //api admin
-app.post('/admin/register',async(req,res)=>{
-    let body = req.body
-    let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
-
-    try {
-        const admin = await model.admin.create({
-            "email" : body.email,
-            "password" : passwordHash
-        })   
-        return res.send({
-            status : 'ok'
-        })
-    } catch (error) {
-        return res.send({
-            status : 'failed',
-            msg : "email is already registered"
-        })
-    }
-})
-
 app.post('/admin/login',async(req,res)=>{
     let body = req.body
     let passwordHash = crypto.createHash('sha256').update(body.password).digest('base64')
@@ -369,34 +374,7 @@ app.post('/admin/login',async(req,res)=>{
         token
     })
 })
-
-app.post('/admin/update',verifyToken,async(req,res)=>{
-    let body = req.body
-
-    if(req.decode.role != 'admin'){
-        res.send({
-            "status" : "failed",
-            "msg" : "role is incorrect"
-        })
-    }
-    let admin = await model.admin.findOne({id : req.decode.id})
-    if(admin == null){
-        return res.send({
-            "status" : "failed",
-            "msg" : "user does not exist"
-        })
-    }
-    admin.nama = body.nama
-    admin.nomor_hp = body.nomor_hp
-    admin.gender = body.gender
-    admin.tanggal_lahir = body.tanggal_lahir
-    admin.save()
-    
-    return res.send({
-        status : "ok"
-    })
-})  
-
+ 
 app.post('/admin/retrieve/data',verifyToken,async(req,res)=>{
     
     if(req.decode.role != 'admin'){
