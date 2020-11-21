@@ -143,6 +143,7 @@ app.post('/siswa/book', verifyToken, async(req, res) => {
     })
 })
 
+//payment transaction
 app.post('/siswa/checkout', verifyToken, async(req, res) => {
     let body = req.body
     if(req.decode.role != 'siswa'){
@@ -155,7 +156,12 @@ app.post('/siswa/checkout', verifyToken, async(req, res) => {
     const session = await model.tutoring_session.findOne({id : body.id})
     session.status = 'PAID'
     session.save()
-
+    
+    const transaction = model.transaction.create({
+        tutoring_sessionId : body.id,
+        status_siswa : "UNVERIFIED"
+    })
+    
     return res.send({
         "status" : "ok",
     })
@@ -315,12 +321,9 @@ app.post('/tutor/request/payment', verifyToken, async(req, res) => {
         })
     }
 
-    const session = model.transaction.create({
-        tutorId: req.decode.id,
-        sessionId : body.id,
-        fee : body.fee,
-        status : "UNVERIFIED"
-    })
+    const transaction = await model.transaction.findOne({tutoring_sessionId : body.id})
+    transaction.status_tutor = 'REQUESTED'
+    transaction.save()
 
     return res.send({
         "status" : "ok",
@@ -419,6 +422,7 @@ app.post('/admin/retrieve/data',verifyToken,async(req,res)=>{
     })
 })
 
+//liat tutor yang blm diverify
 app.post('/admin/retrieve/tutor',verifyToken,async(req,res)=>{
     let body = req.body
     if(req.decode.role != 'admin'){
@@ -486,13 +490,35 @@ app.post('/admin/verify/siswa/payment', verifyToken, async(req,res)=>{
     session.status = 'VERIFIED'
     session.save()
     
+    const transaction = await model.transaction.findOne({tutoring_sessionId : body.id})
+    transaction.status_siswa = 'VERIFIED'
+    transaction.save()
+    
     return res.send({
         "status" : 'ok',
         "data" : session
     })
 })
 
-//verify untuk bayar tutor
+//liat tutor yang request payment
+app.post('/admin/retrieve/payment',verifyToken,async(req,res)=>{
+    let body = req.body
+    if(req.decode.role != 'admin'){
+        return res.send({
+            "status" : "failed",
+            "msg" : "role is incorrect"
+        })
+    }
+
+    const transaction = await model.transaction.findAll({status_tutor : 'REQUESTED'})
+
+    return res.send({
+        "status" : 'ok',
+        "data" : transaction
+    })
+})
+
+//bayar tutor
 app.post('/admin/send/tutor/payment', verifyToken, async(req,res)=>{
     let body = req.body
     if(req.decode.role != 'admin'){
@@ -502,13 +528,13 @@ app.post('/admin/send/tutor/payment', verifyToken, async(req,res)=>{
         })
     }
 
-    const session = await model.transaction.findOne({id : body.id})
-    session.status = 'VERIFIED'
-    session.save()
+    const transaction = await model.transaction.findOne({tutoring_sessionId : body.id})
+    transaction.status_tutor = 'PAID'
+    transaction.save()
     
     return res.send({
         "status" : 'ok',
-        "data" : session
+        "data" : transaction
     })
 })
 
