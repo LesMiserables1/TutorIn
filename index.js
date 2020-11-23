@@ -6,11 +6,12 @@ const jwt = require("jsonwebtoken");
 const verifyToken = require('./verifyToken.js');
 const multer = require('multer')
 const {Op, where} = require('sequelize')
-
+const path = require('path')
 let app = express()
 
 app.use(express.json())
 app.use(cors())
+app.use(express.static('public/PrakPPL'))
 
 // api untuk register siswa
 app.post('/siswa/register',async(req,res)=>{
