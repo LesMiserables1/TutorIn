@@ -11,7 +11,7 @@ let app = express()
 
 app.use(express.json())
 app.use(cors())
-app.use(express.static('public/PrakPPL'))
+app.use(express.static('public'))
 
 // api untuk register siswa
 app.post('/siswa/register',async(req,res)=>{
