@@ -31,8 +31,7 @@ app.post('/siswa/register',async(req,res)=>{
         })   
     } catch (error) {
         return res.send({
-
-            status
+            status : 'false'
         })
     }
 })
@@ -138,16 +137,17 @@ app.post('/siswa/book', verifyToken, async(req, res) => {
         })
     }
     
-    const session = model.tutoring_session.create({
+    const session = await model.tutoring_session.create({
         siswaId : req.decode.id,
         topicId : body.topicId,
         date : body.date,
-        fee : body.fee,
+        time : body.time,
         status : "UNPAID"
     })
     
     return res.send({
         "status" : "ok",
+        "sessionId" : session.id
     })
 })
 
@@ -159,7 +159,14 @@ app.post('/siswa/retrieve/session',verifyToken, async(req,res)=>{
             "msg" : "role is incorrect"
         })
     }
-    let session = await model.tutoring_session.findAll({where : {siswaId : req.decode.id}})
+    let session = await model.tutoring_session.findAll(
+        {
+            include : {
+                model : model.topic,
+                include : [model.tutor]
+            }
+        },{where : {siswaId : req.decode.id}})
+    console.log(session)
     return res.send({
         status : "ok",
         data : session
@@ -198,7 +205,9 @@ app.post('/tutor/register',async(req,res)=>{
     try {
         const tutor = await model.tutor.create({
             "email" : body.email,
-            "password" : passwordHash
+            "password" : passwordHash,
+            "nomor_hp" : body.nomor_hp,
+            "nama" : body.nama
         })   
         return res.send({
             status : 'ok'
@@ -311,7 +320,7 @@ app.post('/tutor/retrieve/session',verifyToken,async(req,res)=>{
         })
     }
 
-    const session = await model.tutoring_session.findAll({where : {status_siswa : "VERIFIED"}})
+    const session = await model.tutoring_session.findAll({include : model.siswa},{where : {status_siswa : "VERIFIED"}})
     return res.send({
         "status" : 'ok',
         "data" : session

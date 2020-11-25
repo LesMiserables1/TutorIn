@@ -105,6 +105,9 @@ const tutoring_session = sequelize.define('tutoring_session',{
   date : {
     type : DataTypes.DATE
   },
+  time : {
+    type : DataTypes.TIME
+  },
   //UNPAID, PAID, VERIFIED
   status_siswa : {
     type : DataTypes.STRING,
@@ -143,7 +146,7 @@ tutoring_session.belongsTo(topic)
 tutoring_session.hasOne(transaction)
 transaction.belongsTo(tutoring_session)
 
-sequelize.sync({force : true})
+sequelize.sync({force : false})
 
 module.exports = {
   siswa : siswa,
