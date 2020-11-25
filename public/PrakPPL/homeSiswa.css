@@ -443,7 +443,6 @@ form:hover .fa{
   border-bottom: 4px solid #fff;
   background-color: #198492;
   color: #fff;
-  border: white;
 }
 .team:hover p {
   color: #fff;
@@ -453,13 +452,15 @@ form:hover .fa{
 }
 
 .contatu{
-  width: 78%;
-  margin-left: 11%;
-  display: flex;
+  width: 90%;
+  margin-left: 5%;
+  display: block;
 }
 .tutorS{
   width: 30%;
   margin-right: 3.33%;
+  float: left;
+  margin-bottom: 3.33%;
 }
 
 /* footer */
