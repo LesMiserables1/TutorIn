@@ -47,16 +47,16 @@
 
             <ul class="nav-list">
               <li class="nav-item">
-                <a href="#home" class="nav-link scroll-link">Home</a>
+                <a href="homeSiswa.html" class="nav-link scroll-link">Home</a>
               </li>
               <li class="nav-item">
-                <a href="#home" class="nav-link scroll-link">Profile</a>
+                <a href="profileSiswa.html" class="nav-link scroll-link">Profile</a>
               </li>
               <li class="nav-item">
-                <a href="#about" class="nav-link scroll-link">My Course</a>
+                <a href="myCourse.html" class="nav-link scroll-link">My Course</a>
               </li>
               <li class="nav-item">
-                <a href="#logout" class="nav-link scroll-link">Logout</a>
+                <a href="index.html" class="nav-link scroll-link">Logout</a>
               </li>
               
             </ul>
@@ -78,7 +78,7 @@
         <h1>My Course</h1>
       </div>
 
-      <div class="about-center container">
+      <!-- <div class="about-center container">
         <div class="left" data-aos="fade-right" data-aos-duration="2000">
           <img src="./images/class.jpg" alt="" />
         </div>
@@ -114,7 +114,7 @@
             <p>Link G-meet</p>
           </div>
         </div>
-      </div>
+      </div> -->
       
       
     </section>
@@ -170,5 +170,52 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
     <!-- Custom Script -->
     <script src="index.js"></script>
+    
+    <script>
+      fetch('http://dev-story.my.id:3010/siswa/retrieve/session', {
+
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      },
+      
+      })
+      .then(async res => {
+        let response = await res.json();
+        console.log(response)
+        if(response.status == 'ok'){
+          let hasil = document.querySelector('.about')
+          response.data.forEach(session => {
+            hasil.innerHTML += 
+            `<div class="line"></div>
+              <div class="about-center container">
+                <div class="left" data-aos="fade-right" data-aos-duration="2000">
+                  <img src="./images/class.jpg" alt="" />
+                </div>
+                <div class="right" data-aos="fade-left" data-aos-duration="2000">
+                  <h1>Tutor: ${session.topic.tutor.nama}</h1>
+                  <ul>
+                    <li>
+                        <span class="label">Class: ${session.topic.topic}</span>
+                        <span class="label">${session.date}</span>
+                    </li>
+                </ul>
+                  <div class="kapan">
+                    <p>Time: ${session.time}</p>
+                    <p>Link G-meet: meet.google.com/kcx-qoqg-aov</p>
+                  </div>
+                </div>
+              </div>`
+          })
+          
+        }
+      })
+    
+    
+    </script>
+
+
+
   </body>
 </html>
