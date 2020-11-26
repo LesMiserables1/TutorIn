@@ -77,7 +77,7 @@
 
       <div class="about-center container">
         <div class="left">
-          <p>Nama : nama awal</p>
+          <!-- <p>Nama : nama awal</p>
           <div class="space">
             <p>Email : email awal</p>
           </div>
@@ -85,7 +85,7 @@
           <div class="space">
             <p>New Password :</p>
           </div>
-          <p>Confiirm Password :</p>
+          <p>Confiirm Password :</p> -->
         </div>
         <div class="right">
           <form>
@@ -161,5 +161,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
     <!-- Custom Script -->
     <script src="index.js"></script>
+
+    <script>
+        fetch('http://dev-story.my.id:3010/admin/retrieve/data', {
+  
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          }
+          
+          })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            let hasil = document.querySelector('.left')
+            if(response.status == 'ok'){
+              hasil.innerHTML += 
+                `<p>Nama : ${response.data.nama}</p>
+                <div class="space">
+                  <p>Email : ${response.data.email}</p>
+                </div>
+                <p>Phone Number : ${response.data.nomor_hp}</p>
+                <div class="space">
+                <p>New Password :</p>
+                </div>
+                  <p>Confiirm Password :</p>`
+            }
+          })
+      
+      
+      </script>
   </body>
 </html>
