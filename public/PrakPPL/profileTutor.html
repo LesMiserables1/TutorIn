@@ -81,7 +81,7 @@
       </div>
       <div class="about-center container">
         <div class="left">
-          <p>Nama : nama awal</p>
+          <!-- <p>Nama : nama awal</p>
           <div class="space">
             <p>Email : email awal</p>
           </div>
@@ -89,7 +89,7 @@
           <div class="space">
             <p>New Password :</p>
           </div>
-          <p>Confiirm Password :</p>
+          <p>Confiirm Password :</p> -->
         </div>
         <div class="right">
           <form id="newTutor">
@@ -110,21 +110,21 @@
         <h2>My Course</h2>
       <div class="kontai">
         <ul class="ks-cboxtags">
-          <li><input type="checkbox" id="checkboxOne" value="Matematika"><label for="checkboxOne">Matematika</label></li>
-          <li><input type="checkbox" id="checkboxTwo" value="Fisika" checked><label for="checkboxTwo">Fisika</label></li>
-          <li><input type="checkbox" id="checkboxThree" value="Kimia" checked><label for="checkboxThree">Kimia</label></li>
-          <li><input type="checkbox" id="checkboxFour" value="Biologi"><label for="checkboxFour">Biologi</label></li>
-          <li><input type="checkbox" id="checkboxFive" value="Ekonomi"><label for="checkboxFive">Ekonomi</label></li>
-          <li><input type="checkbox" id="checkboxSix" value="SejarahIndonesia" checked><label for="checkboxSix">Sejarah Indonesia
+          <li class="topik"><input type="checkbox" id="checkboxOne" value="Matematika"><label for="checkboxOne">Matematika</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxTwo" value="Fisika" checked><label for="checkboxTwo">Fisika</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxThree" value="Kimia" checked><label for="checkboxThree">Kimia</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxFour" value="Biologi"><label for="checkboxFour">Biologi</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxFive" value="Ekonomi"><label for="checkboxFive">Ekonomi</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxSix" value="SejarahIndonesia" checked><label for="checkboxSix">Sejarah Indonesia
                           </label></li>
-          <li><input type="checkbox" id="checkboxSeven" value="Sosiologi"><label for="checkboxSeven">Sosiologi</label></li>
-          <li><input type="checkbox" id="checkboxEight" value="Geografi"><label for="checkboxEight">Geografi</label></li>
-          <li><input type="checkbox" id="checkboxNine" value="BahasaIndonesia"><label for="checkboxNine">Bahasa
+          <li class="topik"><input type="checkbox" id="checkboxSeven" value="Sosiologi"><label for="checkboxSeven">Sosiologi</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxEight" value="Geografi"><label for="checkboxEight">Geografi</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxNine" value="BahasaIndonesia"><label for="checkboxNine">Bahasa
                           Indonesia</label></li>
-          <li><input type="checkbox" id="checkboxTen" value="BahasaInggris"><label for="checkboxTen">Bahasa Inggris</label></li>
-          <li class="ks-selected"><input type="checkbox" id="checkboxEleven" value="KWN"><label for="checkboxEleven">KWN</label></li>
-          <li><input type="checkbox" id="checkboxTwelve" value="Mandarin"><label for="checkboxTwelve">Mandarin</label></li>
-          <li><input type="checkbox" id="checkboxThirteen" value="SejarahDunia"><label for="checkboxThirteen">Sejarah Dunia
+          <li class="topik"><input type="checkbox" id="checkboxTen" value="BahasaInggris"><label for="checkboxTen">Bahasa Inggris</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxEleven" value="KWN"><label for="checkboxEleven">KWN</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxTwelve" value="Mandarin"><label for="checkboxTwelve">Mandarin</label></li>
+          <li class="topik"><input type="checkbox" id="checkboxThirteen" value="SejarahDunia"><label for="checkboxThirteen">Sejarah Dunia
                           </label></li>
           <li><input type="checkbox" id="checkboxFourteen" value="Komputer"><label for="checkboxFourteen">Komputer</label></li>
         </ul>
@@ -194,5 +194,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
     <!-- Custom Script -->
     <script src="index.js"></script>
+
+
+    <script>
+        fetch('http://dev-story.my.id:3010/tutor/retrieve/data', {
+  
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          }
+          
+          })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            let hasil = document.querySelector('.left')
+            if(response.status == 'ok'){
+              hasil.innerHTML += 
+                `<p>Nama : ${response.data.nama}</p>
+                <div class="space">
+                  <p>Email : ${response.data.email}</p>
+                </div>
+                <p>Phone Number : ${response.data.nomor_hp}</p>
+                <div class="space">
+                <p>New Password :</p>
+                </div>
+                  <p>Confirm Password :</p>`
+            }
+          })
+      
+      
+      </script>
+
+
   </body>
 </html>
