@@ -82,7 +82,7 @@
         <h1>Find Tutor</h1>
       </div>
       <form class = "search" action="">
-        <input type="search">
+        <input type="search" class="topic-name">
         <i class="fa fa-search"></i>
       </form>
      <div class="contatu" >
@@ -91,11 +91,10 @@
             <div class="img-cover">
               <img src="./images/class.jpg" alt="" />
             </div>
-            <h3>Someone name</h3>
-            <p>Matkul</p>
+            <h3><b>Andri LM</b></h3>
+            <p>Mathematics</p>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Libero, quo?
+              
             </p>
           </div>
         </div>
@@ -104,11 +103,10 @@
             <div class="img-cover">
               <img src="./images/class.jpg" alt="" />
             </div>
-            <h3>Someone name</h3>
-            <p>Matkul</p>
+            <h3><b>Devi</b></h3>
+            <p>Chemistry</p>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Libero, quo?
+              
             </p>
           </div>
         </div>
@@ -117,37 +115,10 @@
             <div class="img-cover">
               <img src="./images/class.jpg" alt="" />
             </div>
-            <h3>Someone name</h3>
-            <p>Matkul</p>
+            <h3><b>Alvaro</b></h3>
+            <p>Physics</p>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Libero, quo?
-            </p>
-          </div>
-        </div>
-        <div class="tutorS">
-          <div class="team">
-            <div class="img-cover">
-              <img src="./images/class.jpg" alt="" />
-            </div>
-            <h3>Someone name</h3>
-            <p>Matkul</p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Libero, quo?
-            </p>
-          </div>
-        </div>
-        <div class="tutorS">
-          <div class="team">
-            <div class="img-cover">
-              <img src="./images/class.jpg" alt="" />
-            </div>
-            <h3>Someone name</h3>
-            <p>Matkul</p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Libero, quo?
+            
             </p>
           </div>
         </div>
@@ -156,6 +127,10 @@
     </section>
 
    
+
+    <span class = "hilang" id="type2"></span>
+    <span class = "hilang" id="type1"></span>
+    
     <!-- Footer -->
     <footer class="footer-distributed">
  
@@ -204,12 +179,83 @@
     <!-- Glidejs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
     <!-- Custom Script -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
     <script src="index.js"></script>
+
+
     <script>
       function myDelete() {
         var myobj = document.getElementById("1");
         myobj.remove();
       }
+
+      let hasil = document.querySelector('.contatu')
+      
+    
+
+        function saveTutor(name, matkul, deskripsi, nomor_hp, topicId) {
+          localStorage.setItem('name', name);
+          localStorage.setItem('matkul', matkul);
+          localStorage.setItem('deskripsi', deskripsi);
+          localStorage.setItem('nohp', nomor_hp);
+          localStorage.setItem('topicId', topicId);
+          window.location.href = 'http://dev-story.my.id:3010/tentangTutor.html';
+        }
+      
+
+
+      const search = document.querySelector(".fa-search");
+
+      search.onclick = ((e)=>{
+        // alert('Hello World!')
+        e.preventDefault()
+        
+        let topic = document.querySelector('.topic-name').value;
+        console.log(topic)
+        let data = {
+            "query" : topic
+        }
+
+        
+        fetch('http://dev-story.my.id:3010/siswa/search/tutor', {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          },
+          body: JSON.stringify(data)
+        })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            if(response.status == 'ok'){
+              //window.location.href = 'file:///C:/Users/Sherine%20Devi/TutorIn/TutorIn/PrakPPL/tentangTutor.html'
+             
+              response.data.forEach(tutor => {
+              let name = tutor.tutor.nama
+              let topic = tutor.topic
+              let desc = tutor.tutor.deskripsi
+              let nohp = tutor.tutor.nomor_hp
+              let topicId = tutor.id
+              hasil.innerHTML += 
+                    `<div class="tutorS">
+                      <div class="team">
+                        <div class="img-cover">
+                          <img src="./images/class.jpg" onclick="saveTutor('${tutor.tutor.nama}','${tutor.topic}', '${tutor.tutor.deskripsi}', '${tutor.tutor.nomor_hp}', '${tutor.id}');" alt="" />
+                        </div>
+                        <h3><b>${tutor.tutor.nama}</b></h3>
+                        <p>${tutor.topic}</p>
+                        <p>
+                          ${tutor.tutor.deskripsi}
+                        </p>
+                      </div>
+                    </div>`
+            })
+            }
+          })
+
+          })
       
 $("button").click(function(){
 	if($(this).hasClass("confirm")){
@@ -250,6 +296,10 @@ $("span").text("Delete");
 }, 3000);
 }
 });
+
+
+
+
     </script>
   </body>
 </html>
