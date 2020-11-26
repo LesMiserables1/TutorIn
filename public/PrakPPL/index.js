@@ -37,7 +37,7 @@ window.addEventListener("scroll", () => {
 // const links = [...document.querySelectorAll(".scroll-link")];
 // links.map(link => {
 //   link.addEventListener("click", e => {
-//     e.preventDefault();
+//     //e.preventDefault();
 
 //     const id = e.target.getAttribute("href").slice(1);
 //     const element = document.getElementById(id);
@@ -55,31 +55,31 @@ window.addEventListener("scroll", () => {
 //   });
 // });
 
-new TypeIt("#type1", {
-  speed: 120,
-  loop: true,
-  waitUntilVisible: true,
-})
-  .type("Designer", { delay: 400 })
-  .pause(500)
-  .delete(9)
-  .type("Developer", { delay: 400 })
-  .pause(500)
-  .delete(9)
-  .go();
+// new TypeIt("#type1", {
+//   speed: 120,
+//   loop: true,
+//   waitUntilVisible: true,
+// })
+//   .type("Designer", { delay: 400 })
+//   .pause(500)
+//   .delete(9)
+//   .type("Developer", { delay: 400 })
+//   .pause(500)
+//   .delete(9)
+//   .go();
 
-new TypeIt("#type2", {
-  speed: 120,
-  loop: true,
-  waitUntilVisible: true,
-})
-  .type("Designer", { delay: 400 })
-  .pause(500)
-  .delete(9)
-  .type("Developer", { delay: 400 })
-  .pause(500)
-  .delete(9)
-  .go();
+// new TypeIt("#type2", {
+//   speed: 120,
+//   loop: true,
+//   waitUntilVisible: true,
+// })
+//   .type("Designer", { delay: 400 })
+//   .pause(500)
+//   .delete(9)
+//   .type("Developer", { delay: 400 })
+//   .pause(500)
+//   .delete(9)
+//   .go();
 
 gsap.from(".logo", { opacity: 0, duration: 1, delay: 0.5, y: -10 });
 gsap.from(".hamburger", { opacity: 0, duration: 1, delay: 1, x: 20 });
