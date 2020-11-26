@@ -85,15 +85,21 @@
       <div class="title">
         <h1>Booking Details</h1>
       </div>
-      <h2>Booking ID : #1111</h2>
+      <div class="nama-siswa">  </div>
+      
       <div class="about-center container">
         <div class="left" data-aos="fade-right" data-aos-duration="2000">
           <img src="./images/class.jpg" alt="" />
         </div>
         <div class="right" data-aos="fade-left" data-aos-duration="2000">
-          <h1>Nama</h1>
-          <p>Matkul</p>
-          <p>Harga</p>
+         <!--  <h1 class="nama">Nama</h1>
+          <p id="matkul">Matkul</p>
+          <p>Rp200000</p>
+          <p>Choose Day            :                     <input type="date" class="tanggal" id="start" name="trip-start"
+            value="2020-11-21"
+            min="2020-01-01" max="2020-12-31"></p>
+          <p>Choose Time           :                     <input type="time" class="waktu" value="00:00:00" step="1800"></p>
+          <div class="klik"> -->
         </div>
       </div>
 
@@ -108,7 +114,7 @@
         <label for="pNumber">Phone Number  :</label>
         <input type="text" id="pNumber" name="phoneNumber" placeholder="Enter your phone number">
         <div class="klik">
-          <a href="#" class="button">Checkout</a>
+          <a href="" class="button">Checkout</a>
         </div>
       </form>
     <p>&nbsp;</p>
@@ -167,5 +173,77 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
     <!-- Custom Script -->
     <script src="index.js"></script>
+
+    <script>
+      let hasil = document.querySelector('.right')
+      let nama = localStorage.getItem('name')
+      let topic = localStorage.getItem('matkul')
+      let sessionId = localStorage.getItem('sessionId')
+        hasil.innerHTML += 
+              `<div class="right" data-aos="fade-left" data-aos-duration="2000">
+              <h1 class="nama">Tutor Name: ${nama}</h1>
+              <p id="matkul">Subject: ${topic}</p>
+              <p>Fee: Rp200000</p>
+              
+              <div class="klik">
+            </div>
+          </div>`
+      
+          let namasiswa = document.querySelector('.nama-siswa')
+
+          fetch('http://dev-story.my.id:3010/siswa/retrieve/data', {
+
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          },
+        
+          })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            namasiswa.innerHTML = `<h2>Booking ID #${sessionId} </h2>`
+          })
+
+
+      const bookbtn = document.querySelector(".button");
+      bookbtn.onclick = ((e)=>{
+        e.preventDefault()
+        // let date = document.querySelector('.tanggal').value;
+        // let time = document.querySelector('.waktu').value;
+        // let topic = document.getElementById("matkul").textContent;
+        console.log(topic)
+        
+        let data = {
+            "sessionId" : sessionId
+        }
+
+        fetch('http://dev-story.my.id:3010/siswa/checkout', {
+
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          },
+          body: JSON.stringify(data)
+        })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            console.log('sampai sini')
+            window.location.href = 'http://dev-story.my.id:3010/checkout.html';
+            
+          })
+
+
+      });
+
+
+
+        
+    
+    </script>
+
   </body>
 </html>
