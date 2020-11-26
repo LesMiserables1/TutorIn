@@ -6,12 +6,11 @@
     <link rel="stylesheet" href="signup.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
-    <title>Signup</title>
   </head>
   <body>
     <div class="wrapper">
       <div class="title-text">
-        <div class="title login">Signup</div>
+        <div class="title login">Sign Up</div>
     </div>
 <div class="form-container">
         <div class="slide-controls">
@@ -27,43 +26,43 @@
 <div class="form-inner">
     <form action="thankSignUp.html" class="siswa">
         <div class="field">
-            <input type="text" placeholder="Enter your name" required>
+            <input type="text" class="nama-siswa" placeholder="Enter your name" required>
         </div>
         <div class="field">
-            <input type="password" placeholder="Enter your phone number" required>
+            <input type="text" class="phone-siswa" placeholder="Enter your phone number" required>
         </div>
         <div class="field">
-            <input type="text" placeholder="Enter your email" required>
+            <input type="text" class="email-siswa" placeholder="Enter your email" required>
         </div>
         <div class="field">
-            <input type="password" placeholder="Enter your password" required>
+            <input type="password" class="pass-siswa" placeholder="Enter your password" required>
         </div>
         
             <div class="field btn">
             <div class="btn-layer">
         </div>
-        <input type="submit" value="Signup">
+        <input type="submit" value="Sign Up" class='signup-siswa'>
         </div>
 
 </form>
 <form action="thankSignUp.html" class="tutor">
     <div class="field">
-        <input type="text" placeholder="Enter your name" required>
+        <input type="text" class="nama-tutor" placeholder="Enter your name" required>
     </div>
     <div class="field">
-        <input type="password" placeholder="Enter your phone number" required>
+        <input type="text" class="phone-tutor" placeholder="Enter your phone number" required>
     </div>
   <div class="field">
-    <input type="text" placeholder="Enter your email" required>
+    <input type="text" class="email-tutor" placeholder="Enter your email" required>
 </div>
 <div class="field">
-    <input type="password" placeholder="Enter your password" required>
+    <input type="password" class="pass-tutor" placeholder="Enter your password" required>
 </div>
 
     <div class="field btn">
     <div class="btn-layer">
 </div>
-<input type="submit" value="Signup">
+<input type="submit" value="Sign Up" class="signup-tutor" >
 </div>
 
 </form>
@@ -84,7 +83,7 @@
     <div class="field btn">
     <div class="btn-layer">
 </div>
-<input type="submit" value="Signup">
+<input type="submit" value="Sign Up">
 </div>
 
 </form>
@@ -107,14 +106,85 @@
         loginForm.style.marginLeft = "-66.6666666666%";
         
       });
+
       siswaBtn.onclick = (()=>{
         loginForm.style.marginLeft = "0%";
+        
     
       });
-      signupLink.onclick = (()=>{
-        signupBtn.click();
-        return false;
+
+      const siswaSUbtn = document.querySelector(".signup-siswa");
+
+      siswaSUbtn.onclick = ((e)=>{
+        e.preventDefault()
+        let name = document.querySelector('.nama-siswa').value;
+        let phone = document.querySelector('.phone-siswa').value;
+        let email = document.querySelector('.email-siswa').value;
+        let password = document.querySelector('.pass-siswa').value;
+
+        let data = {
+            "nama" : name,
+            "email" : email,
+            "password" : password,
+            "nomor_hp" : phone
+        }
+
+        fetch('http://dev-story.my.id:3010/siswa/register', {
+
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            if(response.status === 'ok'){
+                window.location.href = 'http://dev-story.my.id:3010/thankSignUp.html'
+            }
+          })
+
       });
+
+      const tutorSUbtn = document.querySelector(".signup-tutor");
+
+    tutorSUbtn.onclick = ((e)=>{
+        e.preventDefault()
+        let name = document.querySelector('.nama-tutor').value;
+        let phone = document.querySelector('.phone-tutor').value;
+        let email = document.querySelector('.email-tutor').value;
+        let password = document.querySelector('.pass-tutor').value;
+
+        let data = {
+            "nama" : name,
+            "email" : email,
+            "password" : password,
+            "nomor_hp" : phone
+        }
+
+        fetch('http://dev-story.my.id:3010/tutor/register', {
+
+            method: 'post',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            if(response.status === 'ok'){
+                window.location.href = 'http://dev-story.my.id:3010/thankSignUp.html'
+            }
+            })
+
+        });
+
+    //   signupLink.onclick = (()=>{
+    //     signupBtn.click();
+    //     return false;
+    //   });
     </script>
 
   </body>
