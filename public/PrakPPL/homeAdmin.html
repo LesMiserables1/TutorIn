@@ -71,13 +71,13 @@
       <div class="title">
         <h1>Payment</h1>
       </div>
-      <h2>Booking ID</h2>
-      <div class="about-center container">
+      <!-- <h2>Booking ID</h2>
+      <div class="about-center container" id="siswa">
         <div class="left" >
           <img src="./images/class.jpg" alt="" />
         </div>
         <div class="right" >
-          <h1>Nama Tutor</h1>
+          <h1>Nama Siswa</h1>
           <ul>
             <li>
                 <span class="label">Matkul</span>
@@ -85,8 +85,8 @@
             </li>
         </ul>
         </div>
-      </div>
-      <div class="about-center container">
+      </div> -->
+      <!-- <div class="about-center container">
         <div class="left" >
           <img src="./images/class.jpg" alt="" />
         </div>
@@ -99,35 +99,32 @@
             </li>
         </ul>
         </div>
-      </div>
-      <div class="klik">
-        <a href="#" class="button">Verify</a>
-      </div>
-      <div class="line"></div>
+      </div> -->
+      
       
     </section>
-    <section class="section payment" id="payment">
+    <section class="section payment" id="payment" >
       <div class="title">
         <h1>Tutor Payment</h1>
       </div>
-      <div class="payment-center container">
+      <div class="payment-center container" class=tutor>
         <div class="left" >
           <img src="./images/class.jpg" alt="" />
         </div>
         <div class="right" >
-          <h1>Nama Tutor</h1>
+          <h1>Name: Raymond Luis</h1>
           <ul>
             <li>
-                <span class="label">Matkul</span>
-                Harga
+                <span class="label">Class: Biology</span>
+                <span class="label">Fee: Rp160000</span>
             </li>
         </ul>
-        <p>Credit Card Number</p>
+        <p>Credit Card Number: 0812-2130-1232-213</p>
         </div>
       </div>
      
       <div class="klik">
-        <a href="#" class="button">Accept</a>
+        <a href="#" class="button">Send Payment</a>
       </div>
       <div class="line"></div>
       
@@ -183,5 +180,110 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
     <!-- Custom Script -->
     <script src="index.js"></script>
+
+    <script>
+
+      function verifySiswa(transactionId) {
+        let data = {
+            "transactionId" : transactionId
+          }
+        fetch('http://dev-story.my.id:3010/admin/verify/siswa/payment', {
+        
+          
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify(data)
+        })
+        .then(async res => {
+          let response = await res.json();
+          console.log(response)
+          
+          if(response.status == 'ok'){
+            window.location.href = 'http://dev-story.my.id:3010/homeAdmin.html';
+          }
+        })
+      }
+
+        fetch('http://dev-story.my.id:3010/admin/retrieve/siswa/payment', {
+  
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          }
+          
+          })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            let hasil = document.querySelector('.about')
+            if(response.status == 'ok'){
+              response.data.forEach(siswa => {  
+              hasil.innerHTML += 
+                    `<h2>Booking ID: ${siswa.id}</h2>
+                    <div class="about-center container" id="siswa">
+                      <div class="left" >
+                        <img src="./images/class.jpg" alt="" />
+                      </div>
+                      <div class="right" >
+                        <h1>Name: ${siswa.siswa.nama}</h1>
+                        <ul>
+                          <li>
+                            <span class="label">Phone Number: ${siswa.siswa.nomor_hp}</span>
+                              <span class="label">Payment: Rp200000</span>
+                              <span class="label">Payment Time: ${siswa.updatedAt}</span>
+                          </li>
+                      </ul>
+                      </div>
+                    </div>
+                    <div class="klik">
+                    <a href="#" onclick="verifySiswa('${siswa.transaction.id}');" class="button">Verify</a>
+                  </div>
+                  <div class="line"></div>`
+              })
+            }
+          })
+
+
+
+
+      
+          fetch('http://dev-story.my.id:3010/admin/retrieve/tutor/payment', {
+  
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          }
+          
+          })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            let hasil = document.querySelector('.tutor')
+            if(response.status == 'ok'){
+              response.data.forEach(tutor => {  
+              hasil.innerHTML += 
+                    `<div class="left" >
+                    <img src="./images/class.jpg" alt="" />
+                  </div>
+                  <div class="right" >
+                    <h1>${tutor.siswaId}</h1>
+                    <ul>
+                      <li>
+                          <span class="label"${tutor.topicId}</span>
+                          Rp160000
+                      </li>
+                  </ul>
+                  </div>`
+              })
+            }
+          })
+      </script>
+
+
   </body>
 </html>
