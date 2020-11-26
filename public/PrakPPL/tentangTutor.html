@@ -1,3 +1,5 @@
+<!-- INI BUAT HASIL SEARCH TUTOR AJA -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -89,21 +91,21 @@
           <img src="./images/class.jpg" alt="" />
         </div>
         <div class="right" data-aos="fade-left" data-aos-duration="2000">
-          <h1>Nama</h1>
+          <!-- <h1>Nama</h1>
           <p>Matkul</p>
           <p>Harga</p>
           <p>Nomor Telepon</p>
           <p>
             Biodata
-          </p>
+          </p> -->
         </div>
       </div>
-      <h2>Choose Day            :                     <input type="date" id="start" name="trip-start"
+      <!--  <h2>Choose Day            :                     <input type="date" id="start" name="trip-start"
         value="2020-11-21"
         min="2020-01-01" max="2020-12-31"></h2>
-      <h2>Choose Time           :                     <input type="time" value="00:00:00" step="1800"></h2>
-      <div class="klik">
-        <a href="#" class="button">Book Tutor</a>
+      <h2>Choose Time           :                     <input type="time" value="00:00:00" step="1800"></h2> -->
+      <div class="klik"> -->
+        <a href="bookTutor.html" class="button">Book Tutor</a>
       </div>
       
     </section>
@@ -159,5 +161,79 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
     <!-- Custom Script -->
     <script src="index.js"></script>
+
+    <script>
+      // const saveTutor = (name, matkul) => {
+      //   localStorage.setItem('name', name)
+      //   localStorage.setItem('matkul', matkul)
+      // }
+
+      let hasil = document.querySelector('.about')
+      let namatutor =  localStorage.getItem('name')
+      let matkul =    localStorage.getItem('matkul')
+      let nomor_hp =  localStorage.getItem('nohp')
+      let deskripsi = localStorage.getItem('deskripsi')
+       
+        hasil.innerHTML = 
+              `<div class="about-center container">
+                <div class="left" data-aos="fade-right" data-aos-duration="2000">
+                  <img src="./images/class.jpg" alt="" />
+                </div>
+                <div class="right" data-aos="fade-left" data-aos-duration="2000">
+                  <h1>${namatutor} </h1>
+                  <p>${matkul}</p>
+                  <p>Rp200000</p>
+                  <p>${nomor_hp}</p>
+                  <p>
+                    ${deskripsi}
+                  </p>
+                </div>
+              </div>
+              <h2>Choose Day            :                     <input type="date" class="tanggal" id="start" name="trip-start"
+                value="2020-11-21"
+                min="2020-01-01" max="2020-12-31"></h2>
+              <h2>Choose Time           :                     <input type="time" class="waktu" value="00:00:00" step="1800"></h2>
+              
+              <div class="klik">
+                <a href="bookTutor.html" class=button>Book Tutor</a>
+              </div>`
+        
+      const bookbtn = document.querySelector('.button')
+      bookbtn.onclick = ((e)=>{
+        e.preventDefault()
+        let date = document.querySelector('.tanggal').value;
+        let time = document.querySelector('.waktu').value;
+        let topicId = localStorage.getItem('topicId')
+        console.log(topicId)
+        
+        let data = {
+            "date" : date,
+            "time": time,
+            "topicId": topicId,
+            "fee" : 200000
+        }
+
+        fetch('http://dev-story.my.id:3010/siswa/book', {
+
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          },
+          body: JSON.stringify(data)
+        })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            localStorage.setItem('sessionId', response.sessionId)
+            
+            window.location.href = 'http://dev-story.my.id:3010/bookTutor.html';
+          })
+
+
+      });
+       
+      
+      </script>
   </body>
 </html>
