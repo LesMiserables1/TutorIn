@@ -26,51 +26,51 @@
 <div class="form-inner">
     <form action="homeSiswa.html" class="siswa">
         <div class="field">
-            <input type="text" placeholder="Enter your email" required>
+            <input type="text" class="email-siswa" placeholder="Enter your email" required>
         </div>
         <div class="field">
-            <input type="password" placeholder="Enter your password" required>
+            <input type="password" class="pass-siswa" placeholder="Enter your password" required>
         </div>
         <div class="pass-link">
             <a href="forget.html">Forgot password?</a></div>
             <div class="field btn">
             <div class="btn-layer">
         </div>
-        <input href="home.html" type="submit" value="Login">
+        <input type="submit" value="Login" class="login-siswa">
         </div>
 <div class="signup-link">
 Not a member? <a href="signup.html">Signup now</a></div>
 </form>
 <form action="homeTutor.html" class="tutor">
   <div class="field">
-    <input type="text" placeholder="Enter your email" required>
+    <input type="text" class="email-tutor" placeholder="Enter your email" required>
 </div>
 <div class="field">
-    <input type="password" placeholder="Enter your password" required>
+    <input type="password" class="pass-tutor" placeholder="Enter your password" required>
 </div>
 <div class="pass-link">
     <a href="forget.html">Forgot password?</a></div>
     <div class="field btn">
     <div class="btn-layer">
 </div>
-<input type="submit" value="Login">
+<input type="submit" value="Login" class="login-tutor">
 </div>
 <div class="signup-link">
 Not a member? <a href="signup.html">Signup now</a></div>
 </form>
 <form action="homeAdmin.html" class="admin">
   <div class="field">
-    <input type="text" placeholder="Enter your email" required>
+    <input type="text" class="email-admin" placeholder="Enter your email" required>
 </div>
 <div class="field">
-    <input type="password" placeholder="Enter your password" required>
+    <input type="password" class="pass-admin" placeholder="Enter your password" required>
 </div>
 <div class="pass-link">
     <a href="forget.html">Forgot password?</a></div>
     <div class="field btn">
     <div class="btn-layer">
 </div>
-<input type="submit" value="Login">
+<input type="submit" value="Login" class="login-admin">
 </div>
 <div class="signup-link">
 Not a member? <a href="signup.html">Signup now</a></div>
@@ -89,15 +89,118 @@ Not a member? <a href="signup.html">Signup now</a></div>
       tutorBtn.onclick = (()=>{
         loginForm.style.marginLeft = "-33.3333333333%";
         
+
+
+
       });
       adminBtn.onclick = (()=>{
         loginForm.style.marginLeft = "-66.6666666666%";
         
       });
-      siswaBtn.onclick = (()=>{
-        loginForm.style.marginLeft = "0%";
-    
+
+      const siswaLGbtn = document.querySelector(".login-siswa");
+
+      siswaLGbtn.onclick = ((e)=>{
+        e.preventDefault()
+        
+        let email = document.querySelector('.email-siswa').value;
+        let password = document.querySelector('.pass-siswa').value;
+
+
+        let data = {
+            "email" : email,
+            "password" : password
+        }
+
+        fetch('http://dev-story.my.id:3010/siswa/login', {
+
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            if(response.status == 'ok'){
+              localStorage.setItem('token', response.token)
+              window.location.href = 'http://dev-story.my.id:3010/homeSiswa.html'
+            }
+          })
+          
+
       });
+
+      const tutorLGbtn = document.querySelector(".login-tutor");
+
+      tutorLGbtn.onclick = ((e)=>{
+        e.preventDefault()
+        
+        let email = document.querySelector('.email-tutor').value;
+        let password = document.querySelector('.pass-tutor').value;
+
+
+        let data = {
+            "email" : email,
+            "password" : password
+        }
+
+        fetch('http://dev-story.my.id:3010/tutor/login', {
+
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            if(response.status == 'ok'){
+              localStorage.setItem('token', response.token)
+              window.location.href = 'http://dev-story.my.id:3010/mySession.html'
+            }
+          })
+
+
+      });
+
+      const adminLGbtn = document.querySelector(".login-admin");
+
+      adminLGbtn.onclick = ((e)=>{
+        e.preventDefault()
+        
+        let email = document.querySelector('.email-admin').value;
+        let password = document.querySelector('.pass-admin').value;
+
+
+        let data = {
+            "email" : email,
+            "password" : password
+        }
+
+        fetch('http://dev-story.my.id:3010/admin/login', {
+
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+          .then(async res => {
+            let response = await res.json();
+            console.log(response)
+            if(response.status == 'ok'){
+              localStorage.setItem('token', response.token)
+              window.location.href = 'http://dev-story.my.id:3010/homeAdmin.html'
+            }
+          })
+
+
+      });
+
+
       signupLink.onclick = (()=>{
         signupBtn.click();
         return false;
