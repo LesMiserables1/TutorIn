@@ -229,8 +229,7 @@
             let response = await res.json();
             console.log(response)
             if(response.status == 'ok'){
-              //window.location.href = 'file:///C:/Users/Sherine%20Devi/TutorIn/TutorIn/PrakPPL/tentangTutor.html'
-              
+              hasil.innerHTML = ''
               response.data.forEach(tutor => {
               let name = tutor.tutor.nama
               let topic = tutor.topic
