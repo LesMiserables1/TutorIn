@@ -452,7 +452,7 @@ form:hover .fa{
   border-color: #fff;
 }
 
-/* forum */
+/* forum
 .forum {
   color: #198492;
   background-color: #fff(195, 223, 236);
@@ -474,6 +474,18 @@ form:hover .fa{
 }
 .fa .fa-trash-o{
   
+} */
+
+.contatu{
+  width: 90%;
+  margin-left: 5%;
+  display: block;
+}
+.tutorS{
+  width: 30%;
+  margin-right: 3.33%;
+  float: left;
+  margin-bottom: 3.33%;
 }
 
 /* footer */

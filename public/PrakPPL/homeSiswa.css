@@ -373,7 +373,20 @@ input{
   padding: 0 20px;
 }
 
-
+.fa{
+  box-sizing: border-box;
+  padding: 10px;
+  width: 42.5px;
+  height: 42.5px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 50%;
+  color: #198492;
+  text-align: center;
+  font-size: 1.2em;
+  transition: all 1s;
+}
 
 form:hover{
   width: 200px;
@@ -430,6 +443,7 @@ form:hover .fa{
   border-bottom: 4px solid #fff;
   background-color: #198492;
   color: #fff;
+  border: white;
 }
 .team:hover p {
   color: #fff;
@@ -437,6 +451,27 @@ form:hover .fa{
 .team:hover .img-cover {
   border-color: #fff;
 }
+
+/* forum
+.forum {
+  color: #198492;
+  background-color: #fff(195, 223, 236);
+  padding: 3rem;
+  text-align: center;
+  border-radius: 1rem;
+  border-bottom: 4px solid transparent;
+  transition: all 300ms ease-in-out;
+}
+.forum .quest {
+  border: 2px solid #198492;
+  border-radius: 1rem;
+  box-shadow: 2px lightgray;
+  text-align: left;
+  background: #fff;
+  padding: 10px;
+  font-size: 1.6rem;
+  margin: 1rem 0;
+} */
 
 .contatu{
   width: 90%;
