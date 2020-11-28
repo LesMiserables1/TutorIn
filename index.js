@@ -4,14 +4,13 @@ const model = require('./models.js')
 const crypto = require('crypto')
 const jwt = require("jsonwebtoken");
 const verifyToken = require('./verifyToken.js');
-const multer = require('multer')
 const {Op, where} = require('sequelize')
 const path = require('path')
 let app = express()
 
 app.use(express.json())
 app.use(cors())
-app.use(express.static('public'))
+app.use(express.static('public/PrakPPL'))
 
 // api untuk register siswa
 app.post('/siswa/register',async(req,res)=>{
@@ -159,14 +158,18 @@ app.post('/siswa/retrieve/session',verifyToken, async(req,res)=>{
             "msg" : "role is incorrect"
         })
     }
+
     let session = await model.tutoring_session.findAll(
-        {
+        {   
+            where : {
+                siswaId : req.decode.id
+            },
             include : {
                 model : model.topic,
-                include : [model.tutor]
+                include : [model.tutor],
             }
-        },{where : {siswaId : req.decode.id}})
-    console.log(session)
+        })
+    console.log(req.decode.id)
     return res.send({
         status : "ok",
         data : session
@@ -320,7 +323,21 @@ app.post('/tutor/retrieve/session',verifyToken,async(req,res)=>{
         })
     }
 
-    const session = await model.tutoring_session.findAll({include : model.siswa},{where : {status_siswa : "VERIFIED"}})
+    const session = await model.tutoring_session.findAll(
+        {
+            include : [
+                {
+                model : model.topic,
+                include : [model.tutor],
+    
+                where : {tutorId : req.decode.id}
+                },
+                {
+                    model : model.siswa
+                }
+            ],
+            where : {status_siswa : "VERIFIED"}
+        })
     return res.send({
         "status" : 'ok',
         "data" : session
@@ -434,7 +451,11 @@ app.post('/admin/retrieve/siswa/payment',verifyToken,async(req,res)=>{
         })
     }
 
-    const session = await model.tutoring_session.findAll({include : model.transaction,where : {status_siswa : "PAID"}})
+    const session = await model.tutoring_session.findAll(
+        {
+            include : [model.transaction,model.siswa],
+            where : {status_siswa : "PAID"
+    }})
     // const transaction = session.transaction
     
     return res.send({
