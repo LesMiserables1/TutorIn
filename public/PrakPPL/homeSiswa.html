@@ -209,7 +209,7 @@
 
       search.onclick = ((e)=>{
         e.preventDefault()
-        
+        hasil.innerHTML = ''
         let topic = document.querySelector('.topic-name').value;
         console.log(topic)
         let data = {
@@ -229,7 +229,7 @@
             let response = await res.json();
             console.log(response)
             if(response.status == 'ok'){
-              hasil.innerHTML = ''
+             
               response.data.forEach(tutor => {
               let name = tutor.tutor.nama
               let topic = tutor.topic
